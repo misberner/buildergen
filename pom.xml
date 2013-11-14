@@ -15,13 +15,18 @@
     <packaging>jar</packaging>
     <name>BuilderGen</name>
 
+    <properties>
+        <compiler-plugin.version>3.1</compiler-plugin.version>
+        <stringtemplate.version>4.0.2</stringtemplate.version>
+    </properties>
+
     <build>
         <pluginManagement>
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.1</version>
+                    <version>${compiler-plugin.version}</version>
                     <configuration>
                         <source>1.7</source>
                         <target>1.7</target>
@@ -36,7 +41,7 @@
     		<dependency>
     			<groupId>org.antlr</groupId>
     			<artifactId>stringtemplate</artifactId>
-                <version>4.0.2</version>
+                <version>${stringtemplate.version}</version>
     		</dependency>
     	</dependencies>
 
