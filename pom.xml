@@ -2,34 +2,42 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+
     <parent>
-        <groupId>org.sonatype</groupId>
-        <artifactId>sonatype-oss-parent</artifactId>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
         <version>7</version>
     </parent>
 
-    <groupId>io.github.misberner.buildergenerator</groupId>
-    <artifactId>builder-generator</artifactId>
-    <name>Builder Generator</name>
+    <groupId>io.github.misberner.buildergen</groupId>
+    <artifactId>buildergen</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>BuilderGen</name>
 
-    <dependencies>
-        <!--
-                tools jar
-        -->                
-        <dependency>
-            <groupId>com.sun</groupId>
-            <artifactId>tools</artifactId>
-            <version>1.7.0</version>
-            <scope>system</scope>
-            <systemPath>${java.home}/lib/tools.jar</systemPath>
-        </dependency>
-        <!--
-                string template
-        -->                
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>stringtemplate</artifactId>
-            <version>4.0.2</version>
-        </dependency>
-    </dependencies>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.1</version>
+                    <configuration>
+                        <source>1.7</source>
+                        <target>1.7</target>
+                        <proc>none</proc>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+        <dependencies>
+    		<dependency>
+    			<groupId>org.antlr</groupId>
+    			<artifactId>stringtemplate</artifactId>
+                <version>4.0.2</version>
+    		</dependency>
+    	</dependencies>
+
 </project>
