@@ -1,4 +1,4 @@
-package io.github.misberner.buildergen.processor;
+package com.github.misberner.buildergen.processor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,8 +10,6 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 
 public class Util {
@@ -73,7 +71,7 @@ public class Util {
 		Map<String,T> result = new HashMap<>();
 		for(Element encElem : elem.getEnclosedElements()) {
 			if(filter.isAssignableFrom(encElem.getClass())) {
-				result.put(encElem.getSimpleName().toString(), filter.cast(elem));
+				result.put(encElem.getSimpleName().toString(), filter.cast(encElem));
 			}
 		}
 		return result;

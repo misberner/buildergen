@@ -22,11 +22,12 @@ package_decl(pkgName) ::= <<
 
 class_defn(spec) ::= <<
 <if(spec.classPublic)>public <endif><if(spec.classFinal)>final <endif>class <spec.name><generic_params(spec)> {
+
+	<create_dispatch_defn(spec)>
+
 	<spec.options:{opt | <option_defn(opt)>}; separator="\n">
 	
 	<ctor_defn(spec)>
-	
-	<create_dispatch_defn(spec)>
 	
 	<create_defn(spec)>
 	
@@ -37,8 +38,11 @@ class_defn(spec) ::= <<
 
 generic_params(spec) ::= <<
 <if(spec.typeParameters)>\<
-	<spec.typeParameters:{t |<type_parameter(t)>}; separator=",\n">
-\><endif>
+		<spec.typeParameters:{t |<type_parameter(t)>}; separator=",\n">\><endif>
+>>
+
+generic_param_names(spec) ::= <<
+<if(spec.typeParameters)>\<<spec.typeParameters; separator=", ">\><endif>
 >>
 
 type_parameter(t) ::= <<
@@ -62,15 +66,20 @@ option_init(opt) ::= <<
 create_dispatch_defn(spec) ::= <<
 private static<generic_params(spec)> <spec.instanceType; format="TypeMirror"> $createDispatch(
 	<spec.options:{opt | <opt.type> <opt.name>}; separator=",\n">
-	) {
+	) <throws_decl(spec.instantiator.thrownTypes)>{
 	return <spec.createInvocation>(
 		<spec.options:{opt | <opt.name>}; separator=",\n">
 		);
 }
 >>
 
+throws_decl(types) ::= <<
+<if(types)>throws <types:{t |<t>}; separator=",\n"> <endif>
+>>
+
+
 create_defn(spec) ::= <<
-public <spec.instanceType; format="TypeMirror"> <spec.createName>() {
+public <spec.instanceType; format="TypeMirror"> <spec.createName>() <throws_decl(spec.instantiator.thrownTypes)>{
 	return $createDispatch(
 		<spec.options:{opt | this.<opt.name>}; separator=",\n">
 		);
@@ -98,7 +107,7 @@ public void <opt.setterName>(<opt.type> <opt.name>) {
 >>
 
 with(opt, spec) ::= <<
-public <spec.name> <opt.withName>(<opt.type> <opt.name>) {
+public <spec.name><generic_param_names(spec)> <opt.withName>(<opt.type> <opt.name>) {
 	this.<opt.name> = <opt.name>;
 	return this;
 }

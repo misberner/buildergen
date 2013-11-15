@@ -8,9 +8,9 @@
         <version>7</version>
     </parent>
 
-    <groupId>io.github.misberner.buildergen</groupId>
+    <groupId>com.github.misberner.buildergen</groupId>
     <artifactId>buildergen</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>BuilderGen</name>
 
@@ -58,6 +58,7 @@
                     <configuration>
                         <source>1.7</source>
                         <target>1.7</target>
+                        <!-- Enabling annotation processing will result in no class files being generated! -->
                         <proc>none</proc>
                     </configuration>
                 </plugin>
@@ -65,12 +66,12 @@
         </pluginManagement>
     </build>
 
-        <dependencies>
-    		<dependency>
-    			<groupId>org.antlr</groupId>
-    			<artifactId>stringtemplate</artifactId>
-                <version>${stringtemplate.version}</version>
-    		</dependency>
-    	</dependencies>
+    <dependencies>
+    	<dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>stringtemplate</artifactId>
+            <version>${stringtemplate.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>

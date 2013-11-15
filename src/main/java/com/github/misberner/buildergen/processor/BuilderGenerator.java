@@ -1,4 +1,4 @@
-package io.github.misberner.buildergen.processor;
+package com.github.misberner.buildergen.processor;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -44,7 +44,7 @@ public class BuilderGenerator {
 	public void generateBuilder(SpecModel spec, Filer filer) throws IOException {
 		ST st = templateGroup.getInstanceOf("builder_source");
 		st.add("spec", spec);
-		JavaFileObject jfo = filer.createSourceFile(spec.getFullName());
+		JavaFileObject jfo = filer.createSourceFile(spec.getFullName(), spec.getInstantiator());
 
 		try(Writer w = jfo.openWriter()) {
 			STWriter stWriter = new AutoIndentWriter(w);

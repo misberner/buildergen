@@ -1,8 +1,5 @@
-package io.github.misberner.buildergen.processor;
+package com.github.misberner.buildergen.processor;
 
-import io.github.misberner.buildergen.annotations.GenerateBuilder;
-import io.github.misberner.buildergen.annotations.Option;
-import io.github.misberner.buildergen.annotations.Visibility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +17,10 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic.Kind;
+
+import com.github.misberner.buildergen.annotations.GenerateBuilder;
+import com.github.misberner.buildergen.annotations.Option;
+import com.github.misberner.buildergen.annotations.Visibility;
 
 
 public class SpecModel {
@@ -151,7 +152,7 @@ public class SpecModel {
 		}
 		if(defaultsTypeElem == null) {
 			Map<String,? extends TypeElement> enclosedTypes = util.getEnclosedElements(instantiator.getEnclosingElement(), TypeElement.class);
-			defaultsTypeElem = enclosedTypes.get("$BuilderDefauls");
+			defaultsTypeElem = enclosedTypes.get("BuilderDefaults");
 		}
 		
 		this.defaults = DefaultsModel.create(defaultsTypeElem, processingEnv);
@@ -224,19 +225,25 @@ public class SpecModel {
 	}
 	
 	private String getterName(String varName, TypeKind kind) {
-		String prefix = (kind == TypeKind.BOOLEAN) ? "is" : "get";
+		String prefix = (kind == TypeKind.BOOLEAN) ? getterPrefixBool : getterPrefix;
+		if(prefix == null)
+			return null;
 		String capName = prefix.isEmpty() ? varName : capitalize(varName);
 		return prefix + capName;
 	}
 	
 	private String setterName(String varName, TypeKind kind) {
-		String prefix = "set";
+		String prefix = setterPrefix;
+		if(prefix == null)
+			return null;
 		String capName = prefix.isEmpty() ? varName : capitalize(varName);
 		return prefix + capName;
 	}
 	
 	private String withName(String varName, TypeKind kind) {
-		String prefix = "with";
+		String prefix = withPrefix;
+		if(prefix == null)
+			return null;
 		String capName = prefix.isEmpty() ? varName : capitalize(varName);
 		return prefix + capName;
 	}

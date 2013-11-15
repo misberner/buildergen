@@ -1,7 +1,5 @@
-package io.github.misberner.buildergen.processor;
+package com.github.misberner.buildergen.processor;
 
-import io.github.misberner.buildergen.annotations.GenerateBuilder;
-import io.github.misberner.buildergen.annotations.Option;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -21,6 +19,9 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic.Kind;
+
+import com.github.misberner.buildergen.annotations.GenerateBuilder;
+import com.github.misberner.buildergen.annotations.Option;
 
 public class GenerateBuilderProcessor extends AbstractProcessor {
 	

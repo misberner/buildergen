@@ -1,4 +1,4 @@
-package io.github.misberner.buildergen.annotations;
+package com.github.misberner.buildergen.annotations;
 
 /**
  * The visibility of a builder option attribute.

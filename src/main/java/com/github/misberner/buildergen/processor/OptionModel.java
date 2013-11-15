@@ -1,9 +1,10 @@
-package io.github.misberner.buildergen.processor;
+package com.github.misberner.buildergen.processor;
 
 
-import io.github.misberner.buildergen.annotations.Visibility;
 
 import javax.lang.model.type.TypeMirror;
+
+import com.github.misberner.buildergen.annotations.Visibility;
 
 public class OptionModel {
 	

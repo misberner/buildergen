@@ -1,4 +1,4 @@
-package io.github.misberner.buildergen.processor;
+package com.github.misberner.buildergen.processor;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -8,6 +8,7 @@ import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ElementVisitor;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
@@ -29,7 +30,7 @@ public class DefaultsModel {
 		
 		final Messager m = env.getMessager();
 		final Map<String,Element> defaultElements = new HashMap<>();
-		new AbstractElementVisitor7<Void, Void>() {
+		ElementVisitor<Void, Void> vis = new AbstractElementVisitor7<Void, Void>() {
 			@Override
 			public Void visitPackage(PackageElement e, Void p) {
 				return null;
@@ -54,6 +55,9 @@ public class DefaultsModel {
 			}
 			@Override
 			public Void visitExecutable(ExecutableElement e, Void p) {
+				if(e.getKind() != ElementKind.METHOD) {
+					return null;
+				}
 				if(!e.getModifiers().contains(Modifier.STATIC)) {
 					m.printMessage(Kind.WARNING, "Ignoring non-static method in defaults class", e);
 					return null;
@@ -74,7 +78,10 @@ public class DefaultsModel {
 			public Void visitTypeParameter(TypeParameterElement e, Void p) {
 				return null;
 			}
-		}.visit(defaultsType);
+		};
+		for(Element enclosed : defaultsType.getEnclosedElements()) {
+			vis.visit(enclosed);
+		}
 		
 		return new DefaultsModel(defaultElements);
 	}
