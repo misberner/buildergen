@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2013 by Malte Isberner (https://github.com/misberner).
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.misberner.buildergen.processor;
 
 
@@ -18,12 +33,13 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic.Kind;
 
+import com.github.misberner.buildergen.annotations.AccessorMethods;
 import com.github.misberner.buildergen.annotations.GenerateBuilder;
 import com.github.misberner.buildergen.annotations.Option;
 import com.github.misberner.buildergen.annotations.Visibility;
 
 
-public class SpecModel {
+final class SpecModel {
 	
 	private final String name;
 	private final String packageName;
@@ -31,8 +47,8 @@ public class SpecModel {
 	private final DeclaredType instanceType;
 	private final DefaultsModel defaults;
 	
-	private final boolean classFinal;
-	private final boolean classPublic;
+	private final boolean builderFinal;
+	private final boolean builderPublic;
 	
 	private final String getterPrefix;
 	private final String getterPrefixBool;
@@ -49,7 +65,7 @@ public class SpecModel {
 	
 	
 	public SpecModel(ExecutableElement instantiator, ProcessingEnvironment processingEnv, Util util) {
-		AnnotationMirror annMirror = util.findAnnotationMirror(instantiator, GenerateBuilderProcessor.GENERATE_BUILDER_NAME);
+		AnnotationMirror annMirror = Util.findAnnotationMirror(instantiator, GenerateBuilderProcessor.GENERATE_BUILDER_NAME);
 		GenerateBuilder ann = instantiator.getAnnotation(GenerateBuilder.class);
 		
 		if(annMirror == null || ann == null) {
@@ -101,18 +117,18 @@ public class SpecModel {
 		
 		String packageName = ann.packageName();
 		if(packageName.isEmpty()) {
-			packageName = util.getPackageName(instantiator);
+			packageName = Util.getPackageName(instantiator);
 		}
 		if(packageName.isEmpty()) {
 			packageName = null;
 		}
 		this.packageName = packageName;
 		
-		this.classPublic = ann.builderPublic();
-		this.classFinal = ann.builderFinal();
+		this.builderPublic = ann.builderPublic();
+		this.builderFinal = ann.builderFinal();
 		
 		String[] getterPrefixes = ann.getterPrefix();
-		if(getterPrefixes.length == 0) {
+		if(getterPrefixes.length == 0 || AccessorMethods.SUPPRESS.equals(getterPrefixes[0])) {
 			this.getterPrefix = null;
 			this.getterPrefixBool = null;
 		}
@@ -130,10 +146,10 @@ public class SpecModel {
 		}
 		
 		String setterPrefix = ann.setterPrefix();
-		this.setterPrefix = "".equals(setterPrefix) ? null : setterPrefix;
+		this.setterPrefix = AccessorMethods.SUPPRESS.equals(setterPrefix) ? null : setterPrefix;
 		
 		String withPrefix = ann.withPrefix();
-		this.withPrefix = "".equals(withPrefix) ? null : withPrefix;
+		this.withPrefix = AccessorMethods.SUPPRESS.equals(withPrefix) ? null : withPrefix;
 		
 		
 		this.createName = ann.createName();
@@ -151,7 +167,7 @@ public class SpecModel {
 			}
 		}
 		if(defaultsTypeElem == null) {
-			Map<String,? extends TypeElement> enclosedTypes = util.getEnclosedElements(instantiator.getEnclosingElement(), TypeElement.class);
+			Map<String,? extends TypeElement> enclosedTypes = Util.getEnclosedElements(instantiator.getEnclosingElement(), TypeElement.class);
 			defaultsTypeElem = enclosedTypes.get("BuilderDefaults");
 		}
 		
@@ -171,13 +187,13 @@ public class SpecModel {
 	}
 	
 	private OptionModel processOption(Util util, VariableElement ve) {
-		Map<String,Object> annValues = util.getAnnotationValues(ve, Option.class.getName());
+		Option ann = ve.getAnnotation(Option.class);
 		String name = "";
-		if(annValues != null) {
-			name = (String)annValues.get("name");
+		if(ann != null) {
+			name = ann.name();
 			
 			if("".equals(name)) {
-				name = (String)annValues.get("value");
+				name = ann.value();
 			}
 		}
 		if("".equals(name)) {
@@ -185,8 +201,8 @@ public class SpecModel {
 		}
 		
 		String defaultExpr = "";
-		if(annValues != null) {
-			defaultExpr = (String)annValues.get("defaultExpr");
+		if(ann != null) {
+			defaultExpr = ann.defaultExpr();
 		}
 		if("".equals(defaultExpr)) {
 			defaultExpr = defaults.getDefaultsExpression(name);
@@ -196,24 +212,24 @@ public class SpecModel {
 		TypeMirror type = ve.asType();
 		TypeKind tk = type.getKind();
 		String getterName = "";
-		if(annValues != null) {
-			getterName = (String)annValues.get("getterName");
+		if(ann != null) {
+			getterName = ann.getterName();
 		}
 		if("".equals(getterName)) {
 			getterName = getterName(name, tk);
 		}
 		
 		String setterName = "";
-		if(annValues != null) {
-			setterName = (String)annValues.get("setterName");
+		if(ann != null) {
+			setterName = ann.setterName();
 		}
 		if("".equals(setterName)) {
 			setterName = setterName(name, tk);
 		}
 		
 		String withName = "";
-		if(annValues != null) {
-			withName = (String)annValues.get("withName");
+		if(ann != null) {
+			withName = ann.withName();
 		}
 		if(withName.isEmpty()) {
 			withName = withName(name, tk);
@@ -279,7 +295,7 @@ public class SpecModel {
 
 
 	public boolean isClassFinal() {
-		return classFinal;
+		return builderFinal;
 	}
 
 
@@ -287,7 +303,7 @@ public class SpecModel {
 
 
 	public boolean isClassPublic() {
-		return classPublic;
+		return builderPublic;
 	}
 
 
