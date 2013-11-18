@@ -112,4 +112,13 @@
         </dependency>
     </dependencies>
 
+    <distributionManagement>
+        <!-- Dummy - this will NOT actually be used, but is required for mvn site:stage -->
+        <!-- Use build-tools/deploy-site.sh for site deployment on GitHub pages -->
+        <site>
+            <id>local</id>
+            <url>file://${user.home}/maven-sites/buildergen-site</url>
+        </site>
+    </distributionManagement>
+
 </project>
