@@ -59,6 +59,8 @@ final class SpecModel {
 	private final List<? extends TypeParameterElement> typeParameters;
 	
 	private final List<OptionModel> options = new ArrayList<>(); 
+	private final List<OptionModel> optionsForInstantiation = new ArrayList<>();
+	private final List<OptionModel> optionsForCreation = new ArrayList<>();
 	
 	private final String createName;
 	
@@ -174,20 +176,34 @@ final class SpecModel {
 		this.defaults = DefaultsModel.create(defaultsTypeElem, processingEnv);
 		
 		
-		processOptions(util);
+		processOptions(processingEnv);
 	}
 	
 	
 	
-	private void processOptions(Util util) {
+	private void processOptions(ProcessingEnvironment processingEnv) {
 		for(VariableElement ve : instantiator.getParameters()) {
-			OptionModel optModel = processOption(util, ve);
+			OptionModel optModel = processOption(processingEnv, ve);
 			this.options.add(optModel);
+			if (optModel.isRequiredOnCreation()) {
+				this.optionsForCreation.add(optModel);
+			}
+			if (optModel.isRequiredOnInstantiation()) {
+				this.optionsForInstantiation.add(optModel);
+			}
 		}
 	}
 	
-	private OptionModel processOption(Util util, VariableElement ve) {
+	private OptionModel processOption(ProcessingEnvironment processingEnv, VariableElement ve) {
 		Option ann = ve.getAnnotation(Option.class);
+
+		boolean requiredOnInstantiation = ann != null && ann.requiredOnInstantiation();
+		boolean requiredOnCreation = ann != null && ann.requiredOnCreation();
+
+		if (requiredOnInstantiation && requiredOnCreation) {
+			processingEnv.getMessager().printMessage(Kind.WARNING, "Attribute is required for both instantiation and creation. The value provided at creation will take precedence.", ve);
+		}
+
 		String name = "";
 		if(ann != null) {
 			name = ann.name();
@@ -206,6 +222,12 @@ final class SpecModel {
 		}
 		if("".equals(defaultExpr)) {
 			defaultExpr = defaults.getDefaultsExpression(name);
+		}
+		if((requiredOnInstantiation || requiredOnCreation) && defaultExpr != null) {
+			processingEnv.getMessager().printMessage(Kind.WARNING, "Attribute has a default expression and is required on instantiation/creation. The value provided at instantiation/creation will take precedence.", ve);
+		}
+		if (requiredOnInstantiation) {
+			defaultExpr = name;
 		}
 		
 		
@@ -244,7 +266,7 @@ final class SpecModel {
 			withName = withName(name, tk);
 		}
 		
-		OptionModel optModel = new OptionModel(type, name, getterName, setterName, withName, defaultExpr, Visibility.PRIVATE);
+		OptionModel optModel = new OptionModel(type, name, getterName, setterName, withName, defaultExpr, Visibility.PRIVATE, requiredOnInstantiation, requiredOnCreation);
 		
 		return optModel;
 	}
@@ -321,6 +343,14 @@ final class SpecModel {
 
 	public List<OptionModel> getOptions() {
 		return options;
+	}
+
+	public List<OptionModel> getOptionsForInstantiation() {
+		return optionsForInstantiation;
+	}
+
+	public List<OptionModel> getOptionsForCreation() {
+		return optionsForCreation;
 	}
 
 

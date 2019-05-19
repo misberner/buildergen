@@ -68,9 +68,13 @@ option_defn(opt) ::= <<
 >>
 
 ctor_defn(spec) ::= <<
-public <spec.name>() {
+public <spec.name>(<ctor_params(spec)>) {
 	<spec.options:{opt | <option_init(opt)>}; separator="\n">
 }
+>>
+
+ctor_params(spec) ::= <<
+<spec.optionsForInstantiation:{opt | <opt.type> <opt.name>}; separator=", ">
 >>
 
 option_init(opt) ::= <<
@@ -93,13 +97,16 @@ throws_decl(types) ::= <<
 
 
 create_defn(spec) ::= <<
-public <spec.instanceType; format="TypeMirror"> <spec.createName>() <throws_decl(spec.instantiator.thrownTypes)>{
+public <spec.instanceType; format="TypeMirror"> <spec.createName>(<create_params(spec)>) <throws_decl(spec.instantiator.thrownTypes)>{
 	return $createDispatch(
-		<spec.options:{opt | this.<opt.name>}; separator=",\n">
+		<spec.options:{opt | <opt.name>}; separator=",\n">
 		);
 }
 >>
 
+create_params(spec) ::= <<
+<spec.optionsForCreation:{opt | <opt.type> <opt.name>}; separator=", ">
+>>
 
 
 option_methods(opt, spec) ::= <<

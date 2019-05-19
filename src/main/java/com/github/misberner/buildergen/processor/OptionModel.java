@@ -30,11 +30,14 @@ final class OptionModel {
 	private final String withName;
 	private final String defaultExpr;
 	private final Visibility visiblity;
+	private final boolean requiredOnInstantiation;
+	private final boolean requiredOnCreation;
 
 	
 
 	public OptionModel(TypeMirror type, String name, String getterName, String setterName,
-			String withName, String defaultExpr, Visibility visiblity) {
+			String withName, String defaultExpr, Visibility visiblity, boolean requiredOnInstantiation,
+			boolean requiredOnCreation) {
 		this.type = type;
 		this.name = name;
 		this.getterName = getterName;
@@ -42,6 +45,8 @@ final class OptionModel {
 		this.withName = withName;
 		this.defaultExpr = defaultExpr;
 		this.visiblity = visiblity;
+		this.requiredOnInstantiation = requiredOnInstantiation;
+		this.requiredOnCreation = requiredOnCreation;
 	}
 	
 	public String getName() {
@@ -84,6 +89,18 @@ final class OptionModel {
 
 	public Visibility getVisibility() {
 		return visiblity;
+	}
+
+
+
+	public boolean isRequiredOnInstantiation() {
+		return requiredOnInstantiation;
+	}
+
+
+
+	public boolean isRequiredOnCreation() {
+		return requiredOnCreation;
 	}
 
 

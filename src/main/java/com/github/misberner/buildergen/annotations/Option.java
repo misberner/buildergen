@@ -72,4 +72,15 @@ public @interface Option {
 	 * visibility declared in the {@link GenerateBuilder} annotation will be used.
 	 */
 	public Visibility visibility() default Visibility.INHERIT;
+
+	/**
+	 * A flag indicating, whether or not this parameter is required when instantiating the builder (i.e. a parameter for
+	 * the constructor of the builder).
+	 */
+	public boolean requiredOnInstantiation() default false;
+	/**
+	 * A flag indicating, whether or not this parameter is required when creating the actual object instance (i.e. a
+	 * parameter of the {@link GenerateBuilder#createName() create} method of the builder).
+	 */
+	public boolean requiredOnCreation() default false;
 }
