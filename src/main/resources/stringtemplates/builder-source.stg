@@ -103,9 +103,9 @@ public <spec.instanceType; format="TypeMirror"> <spec.createName>() <throws_decl
 
 
 option_methods(opt, spec) ::= <<
-<getter(opt)>
-<setter(opt)>
-<with(opt, spec)>
+<if(opt.getterName)><getter(opt)><endif>
+<if(opt.setterName)><setter(opt)><endif>
+<if(opt.withName)><with(opt, spec)><endif>
 >>
 
 getter(opt) ::= <<

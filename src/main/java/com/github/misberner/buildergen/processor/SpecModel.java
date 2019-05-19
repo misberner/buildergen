@@ -215,7 +215,10 @@ final class SpecModel {
 		if(ann != null) {
 			getterName = ann.getterName();
 		}
-		if("".equals(getterName)) {
+		if (AccessorMethods.SUPPRESS.equals(getterName)) {
+			getterName = null;
+		}
+		else if("".equals(getterName)) {
 			getterName = getterName(name, tk);
 		}
 		
@@ -223,7 +226,10 @@ final class SpecModel {
 		if(ann != null) {
 			setterName = ann.setterName();
 		}
-		if("".equals(setterName)) {
+		if (AccessorMethods.SUPPRESS.equals(setterName)) {
+			setterName = null;
+		}
+		else if("".equals(setterName)) {
 			setterName = setterName(name, tk);
 		}
 		
@@ -231,7 +237,10 @@ final class SpecModel {
 		if(ann != null) {
 			withName = ann.withName();
 		}
-		if(withName.isEmpty()) {
+		if (AccessorMethods.SUPPRESS.equals(withName)) {
+			withName = null;
+		}
+		else if("".equals(withName)) {
 			withName = withName(name, tk);
 		}
 		
